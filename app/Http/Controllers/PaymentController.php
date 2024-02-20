@@ -58,28 +58,17 @@ class PaymentController extends Controller
 
             foreach ($payments as &$payment) {
                 $payment['total'] = min($remainingTotal, 100000);
+                $remainingTotal -= $payment['total'];
+                
 
                 if ($data['type_id'] === 'TYPE2') {
                     $payment['fee'] = min($payment['total'], 20000);
                     $payment['total'] -= $payment['fee'];
-
-                    // Sisa total untuk baris kedua
-                    $excess = $payment['total'];
-                    
-                    // Hitung fee dan total untuk baris kedua (TYPE2)
-                    if ($excess > 100000) {
-                        $excessPayment['fee'] = min($excess, 20000);
-                        $excessPayment['total'] = $excess - ($excessPayment['fee'] + $data['total']);
-                        $excessPayment['payment_id'] = $data['payment_id'];
-                        $excessPayment['type_id'] = $data['type_id'];
-                        $excessPayment['date'] = $data['date'];
-                    }
                 }
                 
                 // Kurangi total yang tersisa
-                $remainingTotal -= $payment['total'];
             }
-            // dd($payments);
+            dd($payments);
 
             Payment::insert($payments);
 
